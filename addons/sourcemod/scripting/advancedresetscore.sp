@@ -3,7 +3,7 @@
 #define DEBUG
 
 #define PL_AUTOR "Javierkoo21"
-#define PL_VER "1.0.0"
+#define PL_VER "1.0.1"
 
 //includes
 #include <sourcemod>
@@ -13,12 +13,18 @@
 //strings
 char g_szTag[64];
 
+//Booleans
+bool g_bVipFlag[MAXPLAYERS + 1];
+bool g_bAdminFlag[MAXPLAYERS + 1];
+
 //convars
 ConVar g_cvTag;
 ConVar g_cvAlive;
 ConVar g_cvVip;
 ConVar g_cvMvp;
 ConVar g_cvScore;
+ConVar g_cvVipFlag;
+ConVar g_cvAdminFlag;
 
 #pragma newdecls required
 
@@ -38,11 +44,12 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     //Translations
-    LoadTranslations("AdvancedRS.phrases");
+    LoadTranslations("AdvancedRS.phrases");   
     
-	//Commands
+    //Commands
     RegConsoleCmd("sm_rs", Command_ResetScore);
     RegConsoleCmd("sm_resetscore", Command_ResetScore);
+    RegConsoleCmd("sm_setscore", Command_SetScore);
 
     //Cvars
     g_cvTag = CreateConVar("sm_ars_tag", "{darkred}[SM]{default}", "Sets tag for messages.");
@@ -52,6 +59,8 @@ public void OnPluginStart()
     g_cvVip = CreateConVar("sm_ars_vip", "0", "1 - Enable only for VIP players, 0 - enable for everyone", _, true, 0.0, true, 1.0);
     g_cvMvp = CreateConVar("sm_ars_mvp", "0", "1 - Disable reseting MVP, 0 - enable reseting MVP", _, true, 0.0, true, 1.0);
     g_cvScore = CreateConVar("sm_ars_score", "0", "1 - Disable reseting score, 0 - enable reseting score", _, true, 0.0, true, 1.0);
+    g_cvVipFlag = CreateConVar("sm_ars_vipflag", "a", "Flag for access");
+    g_cvAdminFlag = CreateConVar("sm_ars_adminflag", "b", "Flag for access");
 
     AutoExecConfig(true, "AdvancedResetScore");
 }
@@ -121,6 +130,107 @@ public Action Command_ResetScore(int client, int args)
     return Plugin_Handled;
 }
 
+public Action Command_SetScore(int client, int args)
+{
+    if(IsValidClient(client))
+    {
+        if(IsClientAdmin(client))
+        {
+            if(args != 6)
+            {
+                CReplyToCommand(client, "%s Use: /setscore <name or #userid> <kills> <deaths> <assists> <mvp> <score>", g_szTag);
+
+                return Plugin_Handled;
+            }
+
+            char szArgs[64];
+            GetCmdArg(1, szArgs, sizeof(szArgs));
+
+            char szTargetName[MAX_TARGET_LENGTH];
+            int iTargets[MAXPLAYERS], iTargetCount;
+            bool bIsThatML;
+
+            if((iTargetCount = ProcessTargetString(szArgs, client, iTargets, MAXPLAYERS, COMMAND_TARGET_NONE, szTargetName, sizeof(szTargetName), bIsThatML)) <= 0)
+            {
+                ReplyToTargetError(client, iTargetCount);
+
+                return Plugin_Handled;
+            }
+
+            for(int i = 0; i < iTargetCount; i++)
+            {
+                int iTarget = iTargets[i];
+
+                int iArgs2, iArgs3, iArgs4, iArgs5, iArgs6;
+
+                char szArgs2[128];
+                GetCmdArg(2, szArgs2, sizeof(szArgs2));
+                iArgs2 = StringToInt(szArgs2);
+
+                char szArgs3[128];
+                GetCmdArg(3, szArgs3, sizeof(szArgs3));
+                iArgs3 = StringToInt(szArgs3);
+
+                char szArgs4[128];
+                GetCmdArg(4, szArgs4, sizeof(szArgs4));
+                iArgs4 = StringToInt(szArgs4);
+
+                char szArgs5[128];
+                GetCmdArg(5, szArgs5, sizeof(szArgs5));
+                iArgs5 = StringToInt(szArgs5); 
+
+                char szArgs6[128];
+                GetCmdArg(6, szArgs6, sizeof(szArgs6));
+                iArgs6 = StringToInt(szArgs6);
+
+                Func_SetScore(iTarget, iArgs2, iArgs3, iArgs4, iArgs5, iArgs6);
+
+                CReplyToCommand(client, "%s %t", g_szTag, "ars_setscoreA", iTarget, iArgs2, iArgs3, iArgs4, iArgs5, iArgs6);
+                CReplyToCommand(iTarget, "%s %t", g_szTag, "ars_setscoreP", client, iArgs2, iArgs3, iArgs4, iArgs5, iArgs6);
+            }
+        }
+        else
+        {
+            CReplyToCommand(client, "%s %t", g_szTag, "ars_onlyadmin");
+        }
+    }
+
+    return Plugin_Handled;
+}
+
+/*
+    > Flag check <
+*/
+
+public void OnClientPostAdminCheck(int client)
+{
+    char szVipFlags[32], szAdminFlags[32];
+    g_cvVipFlag.GetString(szVipFlags, sizeof(szVipFlags));
+    g_cvAdminFlag.GetString(szAdminFlags, sizeof(szAdminFlags));
+
+    if(IsValidClient(client))
+    {
+        g_bVipFlag[client] = CheckAdminFlag(client, szVipFlags);
+        g_bAdminFlag[client] = CheckAdminFlag(client, szAdminFlags);
+    }
+}
+
+public void OnRebuildAdminCache(AdminCachePart part)
+{
+    char szVipFlags[32], szAdminFlags[32];
+    g_cvVipFlag.GetString(szVipFlags, sizeof(szVipFlags));
+    g_cvAdminFlag.GetString(szAdminFlags, sizeof(szAdminFlags));
+
+    for(int i = 1; i <= MaxClients; i++)
+    {
+        if(IsValidClient(i))
+        {
+            g_bVipFlag[i] = CheckAdminFlag(i, szVipFlags);
+            g_bAdminFlag[i] = CheckAdminFlag(i, szAdminFlags);
+        }
+    }
+}
+
 /*
     > Stocks <
 */
@@ -139,9 +249,23 @@ void Func_ResetScore(int client, bool mvp = false, bool score = false)
         CS_SetClientContributionScore(client, 0);
 }
 
+void Func_SetScore(int client, int kills, int deaths, int assists, int mvp, int score)
+{
+    SetEntProp(client, Prop_Data, "m_iFrags", kills);
+    SetEntProp(client, Prop_Data, "m_iDeaths", deaths);
+    CS_SetClientAssists(client, assists);
+    CS_SetMVPCount(client, mvp);
+    CS_SetClientContributionScore(client, score);
+}
+
 stock bool IsClientVIP(int client)
 {
-    return CheckCommandAccess(client, "", ADMFLAG_RESERVATION);
+    return g_bVipFlag[client];
+}
+
+stock bool IsClientAdmin(int client)
+{
+    return g_bAdminFlag[client];
 }
 
 stock bool IsValidClient(int client) 
@@ -152,4 +276,27 @@ stock bool IsValidClient(int client)
     }
     
     return true;
+}
+
+//Credits: Hexar10 - https://github.com/Hexer10/HexVips/blob/master/addons/sourcemod/scripting/include/hexstocks.inc#L49-L69
+stock bool CheckAdminFlag(int client, const char[] flags)
+{
+	int iCount = 0;
+	char sflagNeed[22][8], sflagFormat[64];
+	bool bEntitled = false;
+	
+	Format(sflagFormat, sizeof(sflagFormat), flags);
+	ReplaceString(sflagFormat, sizeof(sflagFormat), " ", "");
+	iCount = ExplodeString(sflagFormat, ",", sflagNeed, sizeof(sflagNeed), sizeof(sflagNeed[]));
+	
+	for (int i = 0; i < iCount; i++)
+	{
+		if ((GetUserFlagBits(client) & ReadFlagString(sflagNeed[i]) == ReadFlagString(sflagNeed[i])) || (GetUserFlagBits(client) & ADMFLAG_ROOT))
+		{
+			bEntitled = true;
+			break;
+		}
+	}
+	
+	return bEntitled;
 }
