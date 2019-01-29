@@ -1,0 +1,20 @@
+﻿"Phrases"
+{
+	"ars_onlyvip"
+	{
+		"en"			"This command can use only {darkred}VIP's{default}!"
+		"cze"			"Tento příkaz je pouze pro {darkred}VIP hráče{default}!"
+	}
+
+	"ars_reseted"
+	{
+		"en"			"You sucessfully {darkred}reseted your stats{default}!"
+		"cze"			"Úspěšně sis {darkred}resetoval svoje statistiky{default}!"
+	}
+
+	"ars_youdeath"
+	{
+		"en"			"This command is only for {darkred}alive players{default}!"
+		"cze"			"Tento příkaz je pouze pro {darkred}živé hráče{default}!"
+	}
+}
