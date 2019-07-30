@@ -5,19 +5,19 @@
 #define PL_AUTOR "Javierkoo21"
 #define PL_VER "1.0.1"
 
-//includes
+//Includes
 #include <sourcemod>
 #include <cstrike>
 #include <colors>
 
-//strings
+//Strings
 char g_szTag[64];
 
 //Booleans
 bool g_bVipFlag[MAXPLAYERS + 1];
 bool g_bAdminFlag[MAXPLAYERS + 1];
 
-//convars
+//Convars
 ConVar g_cvTag;
 ConVar g_cvAlive;
 ConVar g_cvVip;
@@ -38,7 +38,7 @@ public Plugin myinfo =
 };
 
 /*
-    > Plugin Start <
+    > Plugin Start 
 */
 
 public void OnPluginStart()
@@ -63,10 +63,13 @@ public void OnPluginStart()
     g_cvAdminFlag = CreateConVar("sm_ars_adminflag", "b", "Flag for access");
 
     AutoExecConfig(true, "AdvancedResetScore");
+
+    //Disable backups
+    Func_DisableBackupScore();
 }
 
 /*
-    > Cvars hook <
+    > Cvars hook
 */
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -78,7 +81,16 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 }
 
 /*
-    > Commands <
+    > Map start
+*/
+
+public void OnMapStart()
+{
+    Func_DisableBackupScore();
+}
+
+/*
+    > Commands
 */
 
 public Action Command_ResetScore(int client, int args)
@@ -199,7 +211,7 @@ public Action Command_SetScore(int client, int args)
 }
 
 /*
-    > Flag check <
+    > Flag check
 */
 
 public void OnClientPostAdminCheck(int client)
@@ -232,7 +244,7 @@ public void OnRebuildAdminCache(AdminCachePart part)
 }
 
 /*
-    > Stocks <
+    > Stocks
 */
 
 void Func_ResetScore(int client, bool mvp = false, bool score = false)
@@ -256,6 +268,14 @@ void Func_SetScore(int client, int kills, int deaths, int assists, int mvp, int 
     CS_SetClientAssists(client, assists);
     CS_SetMVPCount(client, mvp);
     CS_SetClientContributionScore(client, score);
+}
+
+void Func_DisableBackupScore()
+{
+    ServerCommand("mp_backup_round_file \"\"");
+    ServerCommand("mp_backup_round_file_last \"\"");
+    ServerCommand("mp_backup_round_file_pattern \"\"");
+    ServerCommand("mp_backup_round_auto 0");
 }
 
 stock bool IsClientVIP(int client)
