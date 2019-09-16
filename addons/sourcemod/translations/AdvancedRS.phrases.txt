@@ -38,5 +38,3 @@
 		"cze"			"Admin {darkred}{1}{default} ti nastavil {darkred}{2}, {3}, {4}, {5}, {6}{default} (K,D,A,MVP,SCORE) skóré!"
 	}
 }
-	}
-}
