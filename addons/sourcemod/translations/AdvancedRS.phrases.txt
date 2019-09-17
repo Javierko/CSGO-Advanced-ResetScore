@@ -2,39 +2,45 @@
 {
 	"ars_onlyvip"
 	{
-		"en"			"This command can use only {darkred}VIP's{default}!"
+		"en"			"This command can only be used by {darkred}VIP's{default}!"
+        "de"			"Dieser Befehl kann nur von {darkred}VIP's{default} benutzt werden!"
 		"cze"			"Tento příkaz je pouze pro {darkred}VIP hráče{default}!"
 	}
 
 	"ars_reseted"
 	{
-		"en"			"You sucessfully {darkred}reseted your stats{default}!"
+		"en"			"You've successfully {darkred}reseted your stats{default}!"
+        "de"			"Du haste erfolgreich deine {darkred}Statistiken zurückgesetzt!{default}!"
 		"cze"			"Úspěšně sis {darkred}resetoval svoje statistiky{default}!"
 	}
 
 	"ars_youdeath"
 	{
-		"en"			"This command is only for {darkred}alive players{default}!"
+		"en"			"This command will only work if you're{darkred}alive{default}!"
+        "de"			"Dieser Befehl funktioniert nur wenn du{darkred}am Leben bist{default}!"
 		"cze"			"Tento příkaz je pouze pro {darkred}živé hráče{default}!"
 	}
 
 	"ars_onlyadmin"
 	{
-		"en"			"This command is only for {darkred}admins{default}!"
+		"en"			"This command is only ment for {darkred}admins{default}!"
+        "de"			"Dieser Befehl kann nur von {darkred}Administratoren{default} ausgeführt werden!"
 		"cze"			"Tento příkaz je pouze pro {darkred}adminy{default}!"
 	}
 
 	"ars_setscoreA"
 	{
 		"#format"		"{1:N},{2:i},{3:i},{4:i},{5:i},{6:i}"
-		"en"			"You set player {darkred}{1} {2}, {3}, {4}, {5}, {6}{default} (K,D,A,MVP,SCORE) score!"
+		"en"			"You've changed the score of {darkred}{1} to {2}, {3}, {4}, {5}, {6}{default} (K,D,A,MVP,SCORE)!"
+        "de"			"Du hast die Statistiken von {darkred}{1} in {2}, {3}, {4}, {5}, {6}{default} (K,D,A,MVP,SCORE) geändert!"
 		"cze"			"Nastavil jsi hráči {darkred}{1} {2}, {3}, {4}, {5}, {6}{default} (K,D,A,MVP,SCORE) skóre!"
 	}
 
 	"ars_setscoreP"
 	{
 		"#format"		"{1:N},{2:i},{3:i},{4:i},{5:i},{6:i}"
-		"en"			"Admin {darkred}{1}{default} set you {darkred}{2}, {3}, {4}, {5}, {6}{default} (K,D,A,MVP,SCORE) score!"
+		"en"			"Admin {darkred}{1}{default} have set your score to {darkred}{2}, {3}, {4}, {5}, {6}{default} (K,D,A,MVP,SCORE)!"
+        "de"			"Admin {darkred}{1}{default} hat deine Statistiken in {darkred}{2}, {3}, {4}, {5}, {6}{default} (K,D,A,MVP,SCORE) geändert!"
 		"cze"			"Admin {darkred}{1}{default} ti nastavil {darkred}{2}, {3}, {4}, {5}, {6}{default} (K,D,A,MVP,SCORE) skóré!"
 	}
 }
