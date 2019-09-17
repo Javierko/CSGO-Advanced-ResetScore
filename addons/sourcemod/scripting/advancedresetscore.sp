@@ -4,6 +4,7 @@
 
 #define PL_AUTOR "Javierkoo21"
 #define PL_VER "1.0.1"
+#define LoopClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++)
 
 //Includes
 #include <sourcemod>
@@ -66,6 +67,14 @@ public void OnPluginStart()
 
     //Disable backups
     Func_DisableBackupScore();
+
+    LoopClients(i)
+    {
+        if(IsValidClient(i))
+        {
+            OnClientPostAdminCheck(i);
+        }
+    }
 }
 
 /*
