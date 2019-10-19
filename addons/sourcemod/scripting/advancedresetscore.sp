@@ -106,7 +106,7 @@ public Action Command_ResetScore(int client, int args)
 {
     if(IsValidClient(client))
     {
-        if(g_cvVip.BoolValue && !IsClientVIP(client))
+        if(g_cvVip.BoolValue && !g_bVipFlag[client])
         {
             CReplyToCommand(client, "%s %t", g_szTag, "ars_onlyvip");
 
@@ -155,7 +155,7 @@ public Action Command_SetScore(int client, int args)
 {
     if(IsValidClient(client))
     {
-        if(IsClientAdmin(client))
+        if(g_bAdminFlag[client])
         {
             if(args != 6)
             {
@@ -285,16 +285,6 @@ void Func_DisableBackupScore()
     ServerCommand("mp_backup_round_file_last \"\"");
     ServerCommand("mp_backup_round_file_pattern \"\"");
     ServerCommand("mp_backup_round_auto 0");
-}
-
-stock bool IsClientVIP(int client)
-{
-    return g_bVipFlag[client];
-}
-
-stock bool IsClientAdmin(int client)
-{
-    return g_bAdminFlag[client];
 }
 
 stock bool IsValidClient(int client) 
