@@ -117,14 +117,7 @@ public Action Command_ResetScore(int client, int args)
         {
             if(IsPlayerAlive(client))
             {
-                if(g_cvMvp.BoolValue && g_cvScore.BoolValue)
-                    Func_ResetScore(client, true, true);
-                else if(g_cvMvp.BoolValue && !g_cvScore.BoolValue)
-                    Func_ResetScore(client, true, false);
-                else if(!g_cvMvp.BoolValue && g_cvScore.BoolValue)
-                    Func_ResetScore(client, false, true);
-                else if(!g_cvMvp.BoolValue && !g_cvScore.BoolValue)
-                    Func_ResetScore(client, false, false);
+	    	Func_ResetScore(client, g_cvMvp.BoolValue, g_cvScore.BoolValue);
 
                 CReplyToCommand(client, "%s %t", g_szTag, "ars_reseted");
             }
@@ -135,14 +128,7 @@ public Action Command_ResetScore(int client, int args)
         }
         else
         {
-            if(g_cvMvp.BoolValue && g_cvScore.BoolValue)
-                Func_ResetScore(client, true, true);
-            else if(g_cvMvp.BoolValue && !g_cvScore.BoolValue)
-                Func_ResetScore(client, true, false);
-            else if(!g_cvMvp.BoolValue && g_cvScore.BoolValue)
-                Func_ResetScore(client, false, true);
-            else if(!g_cvMvp.BoolValue && !g_cvScore.BoolValue)
-                Func_ResetScore(client, false, false);
+            Func_ResetScore(client, g_cvMvp.BoolValue, g_cvScore.BoolValue);
 
             CReplyToCommand(client, "%s %t", g_szTag, "ars_reseted");
         }
